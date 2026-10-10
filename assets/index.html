@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>布萨日日历订阅 · Uposatha Calendar</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei",
+      "Noto Sans CJK SC", sans-serif;
+    background: #f6f4ee; color: #2b2723;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { font-size: 1.7rem; margin: 0 0 4px; }
+  .sub { color: #7a7268; margin: 0 0 28px; }
+  .card {
+    background: #fff; border: 1px solid #e5e0d5; border-radius: 14px;
+    padding: 20px 22px; margin: 16px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  }
+  .card h2 { margin: 0 0 4px; font-size: 1.12rem; }
+  .card p { margin: 4px 0 14px; color: #6b635a; font-size: .94rem; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  a.btn {
+    display: inline-block; text-decoration: none; padding: 9px 18px;
+    border-radius: 9px; background: #b8472d; color: #fff; font-weight: 600;
+  }
+  a.btn.alt { background: #6f6253; }
+  .url {
+    flex: 1; min-width: 220px; font-family: ui-monospace, Menlo, monospace;
+    font-size: .8rem; background: #f3f0e8; border: 1px solid #e0dacd;
+    border-radius: 7px; padding: 8px 10px; overflow-x: auto; white-space: nowrap;
+  }
+  button.copy {
+    border: 1px solid #d3ccbd; background: #f3f0e8; border-radius: 7px;
+    padding: 8px 12px; cursor: pointer; font-size: .85rem;
+  }
+  h3 { margin: 34px 0 10px; font-size: 1.05rem; }
+  ul.events { list-style: none; margin: 0; padding: 0; }
+  ul.events li {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 9px 4px; border-bottom: 1px dashed #ddd6c8; font-size: .95rem;
+  }
+  ul.events .d { color: #8a5a3b; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .note { font-size: .85rem; color: #8a837a; margin-top: 26px; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #1c1a17; color: #e8e2d8; }
+    .card { background: #262320; border-color: #3a352e; }
+    .card p, .sub { color: #a79f94; }
+    .url, button.copy { background: #322e28; border-color: #46413a; color: #d8d1c5; }
+    ul.events li { border-color: #38332c; }
+    ul.events .d { color: #d08a63; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>布萨日日历订阅</h1>
+  <p class="sub">Uposatha (伍波思特) days · 月圆 / 月黑 / 上弦 / 下弦 + 佛教重大节日，全天事件，自动更新。</p>
+
+  <div class="card">
+    <h2>📅 全部布萨日（每月 4 天 + 五大节日）</h2>
+    <p>约每 7-8 天一次：月圆日、月黑日、上弦月、下弦月，以及敬僧节、敬佛节、敬法节、入雨安居、出雨安居。</p>
+    <div class="row">
+      <a class="btn" id="sub-all" href="#">订阅日历</a>
+      <a class="btn alt" href="uposatha.ics">下载 .ics</a>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <span class="url" id="url-all"></span>
+      <button class="copy" data-target="url-all">复制</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🪷 仅重大节日</h2>
+    <p>敬僧节（Magha Puja）、敬佛节（Vesak）、敬法节（Asalha Puja）、入雨安居、出雨安居。</p>
+    <div class="row">
+      <a class="btn" id="sub-fest" href="#">订阅日历</a>
+      <a class="btn alt" href="uposatha-festivals.ics">下载 .ics</a>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <span class="url" id="url-fest"></span>
+      <button class="copy" data-target="url-fest">复制</button>
+    </div>
+  </div>
+
+  <h3>即将到来的布萨日</h3>
+  <ul class="events" id="events"><li>加载中…</li></ul>
+
+  <p class="note">
+    订阅方法：iPhone/Mac 点「订阅日历」（或 设置 → 日历 → 账户 → 添加日历 → 粘贴 URL）；
+    Google 日历：设置 → 添加日历 → 通过 URL；Outlook：添加日历 → 从 Internet 订阅。
+    日期依据「美德雅 Metteyya」App 内置缅甸传统历法算法本地计算生成，与天文朔望可能有 1 日之差，
+    属正常现象；建议在日历 App 中设置定时刷新。
+  </p>
+</div>
+
+<script>
+const base = location.origin + location.pathname.replace(/index\.html?$/, "");
+const feeds = [
+  ["all", "uposatha.ics"],
+  ["fest", "uposatha-festivals.ics"],
+];
+for (const [id, file] of feeds) {
+  const url = base + file;
+  document.getElementById("url-" + id).textContent = url;
+  document.getElementById("sub-" + id).href =
+    "webcal://" + url.replace(/^https?:\/\//, "");
+}
+document.querySelectorAll("button.copy").forEach((b) => {
+  b.addEventListener("click", async () => {
+    const t = document.getElementById(b.dataset.target).textContent;
+    try { await navigator.clipboard.writeText(t); b.textContent = "已复制"; }
+    catch { b.textContent = "复制失败"; }
+    setTimeout(() => (b.textContent = "复制"), 1500);
+  });
+});
+
+function unfold(txt) {
+  return txt.replace(/\r?\n[ \t]/g, "");
+}
+function unesc(s) {
+  return s.replace(/\\([\\,;n])/g, (m, c) => (c === "n" ? "\n" : c));
+}
+fetch("uposatha.ics?_=" + Date.now())
+  .then((r) => r.text())
+  .then((txt) => {
+    const events = [];
+    for (const block of unfold(txt).split("BEGIN:VEVENT").slice(1)) {
+      const body = block.split("END:VEVENT")[0];
+      let dt, sum;
+      for (const line of body.split(/\r?\n/)) {
+        if (line.startsWith("DTSTART")) dt = line.split(":")[1].trim();
+        if (line.startsWith("SUMMARY")) sum = unesc(line.split(":").slice(1).join(":"));
+      }
+      events.push([dt, sum]);
+    }
+    const today = new Date();
+    const up = events
+      .map(([d, s]) => [
+        new Date(+d.slice(0, 4), +d.slice(4, 6) - 1, +d.slice(6, 8)), s,
+      ])
+      .filter(([d]) => d >= new Date(today.getFullYear(), today.getMonth(), today.getDate()))
+      .slice(0, 12);
+    document.getElementById("events").innerHTML = up
+      .map(([d, s]) => {
+        const wd = "日一二三四五六"[d.getDay()];
+        const key = s.split("/")[0].trim();
+        return `<li><span>${key}</span><span class="d">${d.getFullYear()}-${String(
+          d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} 周${wd}</span></li>`;
+      })
+      .join("");
+  })
+  .catch(() => {
+    document.getElementById("events").textContent = "无法加载（直接订阅即可）";
+  });
+</script>
+</body>
+</html>

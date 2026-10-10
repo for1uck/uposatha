@@ -1,0 +1,57 @@
+name: Build & deploy Uposatha calendar
+
+on:
+  schedule:
+    # Regenerate once a month - the arithmetic calendar never changes, but
+    # the rolling window (past 2 years .. next 10 years) is extended.
+    - cron: "23 4 3 * *"
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Validate kernel (independent cross-port + astronomy)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+          python validate.py
+
+      - name: Generate ICS feeds
+        run: |
+          python generate_ics.py --out site
+          cp assets/* site/ 2>/dev/null || true
+          touch site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
