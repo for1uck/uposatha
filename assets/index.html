@@ -63,11 +63,15 @@
     background: rgba(40,32,24,.45); padding: 18px;
   }
   #cal-modal.open { display: flex; align-items: flex-start; justify-content: center; }
+  body.cal-lock { overflow: hidden; }
   .cal-panel {
     background: #fffdf8; border-radius: 16px; width: 100%; max-width: 860px;
     margin-top: 3vh; box-shadow: 0 18px 60px rgba(0,0,0,.3);
     display: flex; flex-direction: column; overflow: hidden;
+    max-height: 94vh;
   }
+  /* both views scroll inside the panel on small screens */
+  .cal-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; min-height: 0; }
   .cal-head {
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     padding: 14px 18px; border-bottom: 1px solid #ece5d8;
@@ -96,6 +100,7 @@
   /* month grid */
   .cal-body { padding: 14px 18px 8px; }
   .dow, .mrow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .dow { position: sticky; top: 0; background: #fffdf8; z-index: 1; padding-top: 2px; }
   .dow div { text-align: center; font-size: .78rem; color: #9a9186; padding: 4px 0; }
   .mcell {
     position: relative; min-height: 64px; border-radius: 10px; padding: 5px 7px;
@@ -138,9 +143,14 @@
   .leg .l-q { background: #d9b96a; } .leg .l-fest { background: #8e5bb5; }
 
   @media (max-width: 640px) {
+    #cal-modal { padding: 8px; }
+    .cal-panel { margin-top: 0; max-height: calc(100dvh - 16px); border-radius: 12px; }
     .mcell { min-height: 50px; padding: 3px 4px; }
     .mk { font-size: .58rem; }
-    #year-grid { grid-template-columns: repeat(2, 1fr); }
+    #year-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 10px 10px 14px; }
+    .cal-head { padding: 10px 12px; gap: 8px; }
+    .cal-body { padding: 10px 12px 8px; }
+    .cal-foot { padding: 8px 12px 12px; }
     .cal-title { min-width: 6em; font-size: .95rem; }
   }
   @media (prefers-color-scheme: dark) {
@@ -164,6 +174,7 @@
     .mini { border-color: #3a352e; }
     .mini:hover { background: #2d2a25; border-color: #6b5648; }
     .mini .dow span { color: #7d756a; }
+    .dow { background: #262320; }
     .dow div { color: #8a837a; }
     #cal-modal { background: rgba(0,0,0,.6); }
   }
@@ -227,13 +238,13 @@
       </span>
       <button class="cal-close" id="cal-close" aria-label="关闭">×</button>
     </div>
-    <div id="month-view" class="cal-body">
+    <div id="month-view" class="cal-scroll cal-body">
       <div class="dow">
         <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
       </div>
       <div id="month-grid"></div>
     </div>
-    <div id="year-view" style="display:none">
+    <div id="year-view" class="cal-scroll" style="display:none">
       <div id="year-grid"></div>
     </div>
     <div class="cal-foot">
@@ -397,6 +408,8 @@ function setView(mode) {
   document.getElementById("month-view").style.display = mode === "month" ? "" : "none";
   document.getElementById("year-view").style.display = mode === "year" ? "" : "none";
   if (mode === "month") renderMonth(); else renderYear();
+  document.getElementById("month-view").scrollTop = 0;
+  document.getElementById("year-view").scrollTop = 0;
 }
 
 function stepCalendar(n) {
@@ -411,12 +424,22 @@ document.getElementById("cal-open").addEventListener("click", () => {
   setView("month");
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("cal-lock");
 });
 document.getElementById("cal-close").addEventListener("click", closeCal);
 modal.addEventListener("click", (e) => { if (e.target === modal) closeCal(); });
+// prevent the backdrop itself from scrolling the page on touch devices
+modal.addEventListener("touchmove", (e) => {
+  if (e.target === modal) e.preventDefault();
+}, { passive: false });
+// touches on header/footer of the panel must never scroll the background
+document.querySelector(".cal-panel").addEventListener("touchmove", (e) => {
+  if (!e.target.closest(".cal-scroll")) e.preventDefault();
+}, { passive: false });
 function closeCal() {
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("cal-lock");
 }
 document.addEventListener("keydown", (e) => {
   if (!modal.classList.contains("open")) return;
