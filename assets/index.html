@@ -46,6 +46,103 @@
   }
   ul.events .d { color: #8a5a3b; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .note { font-size: .85rem; color: #8a837a; margin-top: 26px; }
+
+  /* ---- online calendar button (top right) ---- */
+  #cal-open {
+    position: fixed; top: 16px; right: 16px; z-index: 40;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 16px; border: none; border-radius: 999px;
+    background: #b8472d; color: #fff; font-size: .92rem; font-weight: 600;
+    cursor: pointer; box-shadow: 0 3px 12px rgba(150,60,30,.35);
+  }
+  #cal-open:hover { background: #a23d26; }
+
+  /* ---- modal ---- */
+  #cal-modal {
+    position: fixed; inset: 0; z-index: 50; display: none;
+    background: rgba(40,32,24,.45); padding: 18px;
+  }
+  #cal-modal.open { display: flex; align-items: flex-start; justify-content: center; }
+  .cal-panel {
+    background: #fffdf8; border-radius: 16px; width: 100%; max-width: 860px;
+    margin-top: 3vh; box-shadow: 0 18px 60px rgba(0,0,0,.3);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .cal-head {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 14px 18px; border-bottom: 1px solid #ece5d8;
+  }
+  .cal-title { font-size: 1.08rem; font-weight: 700; margin-right: auto; min-width: 7.5em; }
+  .cal-nav {
+    border: 1px solid #d8d0c0; background: #f7f3ea; border-radius: 8px;
+    width: 34px; height: 32px; font-size: 1rem; cursor: pointer; color: #5b5248;
+  }
+  .cal-nav:hover { background: #efe8d8; }
+  .cal-today {
+    border: 1px solid #d8d0c0; background: #f7f3ea; border-radius: 8px;
+    height: 32px; padding: 0 12px; font-size: .85rem; cursor: pointer; color: #5b5248;
+  }
+  .seg { display: inline-flex; border: 1px solid #d8d0c0; border-radius: 8px; overflow: hidden; }
+  .seg button {
+    border: none; background: #f7f3ea; padding: 6px 14px; font-size: .85rem;
+    cursor: pointer; color: #5b5248;
+  }
+  .seg button.on { background: #b8472d; color: #fff; font-weight: 600; }
+  .cal-close {
+    border: none; background: transparent; font-size: 1.25rem; cursor: pointer;
+    color: #8a8074; padding: 2px 8px;
+  }
+
+  /* month grid */
+  .cal-body { padding: 14px 18px 8px; }
+  .dow, .mrow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .dow div { text-align: center; font-size: .78rem; color: #9a9186; padding: 4px 0; }
+  .mcell {
+    position: relative; min-height: 64px; border-radius: 10px; padding: 5px 7px;
+    border: 1px solid transparent; cursor: default;
+  }
+  .mcell.out { color: #c4bcad; }
+  .mcell .num { font-size: .86rem; font-variant-numeric: tabular-nums; }
+  .mcell.today { border-color: #b8472d; }
+  .mcell.today .num { font-weight: 700; color: #b8472d; }
+  .mk { display: block; font-size: .66rem; line-height: 1.25; border-radius: 4px;
+        padding: 1px 3px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mk.full  { background: #fbe3dc; color: #a23d26; }
+  .mk.new   { background: #e3e0da; color: #44403a; }
+  .mk.q     { background: #f3e7cf; color: #8a6a24; }
+  .mk.fest  { background: #e7dcf2; color: #6d3f91; font-weight: 600; }
+
+  /* year grid */
+  #year-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 14px 18px 18px; }
+  .mini { border: 1px solid #ece5d8; border-radius: 10px; padding: 8px 10px 10px; cursor: pointer; }
+  .mini:hover { border-color: #c9a48f; background: #fbf6ee; }
+  .mini h4 { margin: 0 0 6px; font-size: .85rem; font-weight: 600; }
+  .mini .dow { display: grid; grid-template-columns: repeat(7,1fr); }
+  .mini .dow span { text-align: center; font-size: .58rem; color: #a89f93; }
+  .mini-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+  .mini-grid i {
+    height: 9px; border-radius: 2px; background: transparent; display: block;
+  }
+  .mini-grid i.full { background: #c65a3a; }
+  .mini-grid i.new  { background: #6b655c; }
+  .mini-grid i.q    { background: #d9b96a; }
+  .mini-grid i.fest { background: #8e5bb5; }
+
+  .cal-foot {
+    padding: 8px 18px 14px; font-size: .78rem; color: #8a8074;
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  .leg { display: inline-flex; align-items: center; gap: 5px; }
+  .leg i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .leg .l-full { background: #c65a3a; } .leg .l-new { background: #6b655c; }
+  .leg .l-q { background: #d9b96a; } .leg .l-fest { background: #8e5bb5; }
+
+  @media (max-width: 640px) {
+    .mcell { min-height: 50px; padding: 3px 4px; }
+    .mk { font-size: .58rem; }
+    #year-grid { grid-template-columns: repeat(2, 1fr); }
+    .cal-title { min-width: 6em; font-size: .95rem; }
+  }
   @media (prefers-color-scheme: dark) {
     body { background: #1c1a17; color: #e8e2d8; }
     .card { background: #262320; border-color: #3a352e; }
@@ -53,10 +150,28 @@
     .url, button.copy { background: #322e28; border-color: #46413a; color: #d8d1c5; }
     ul.events li { border-color: #38332c; }
     ul.events .d { color: #d08a63; }
+    .cal-panel { background: #262320; }
+    .cal-head { border-color: #3a352e; }
+    .cal-nav, .cal-today { background: #322e28; border-color: #46413a; color: #c9c0b4; }
+    .seg button { background: #322e28; color: #c9c0b4; }
+    .mcell.out { color: #6a635a; }
+    .mcell.today { border-color: #d08a63; }
+    .mcell.today .num { color: #e8a885; }
+    .mk.full { background: #4a2b22; color: #e8a88f; }
+    .mk.new { background: #37342f; color: #bfb8ac; }
+    .mk.q { background: #453a24; color: #dcc57e; }
+    .mk.fest { background: #3a2c48; color: #c49ee0; }
+    .mini { border-color: #3a352e; }
+    .mini:hover { background: #2d2a25; border-color: #6b5648; }
+    .mini .dow span { color: #7d756a; }
+    .dow div { color: #8a837a; }
+    #cal-modal { background: rgba(0,0,0,.6); }
   }
 </style>
 </head>
 <body>
+<button id="cal-open">🗓 在线日历</button>
+
 <div class="wrap">
   <h1>布萨日日历订阅</h1>
   <p class="sub">Uposatha (伍波思特) days · 月圆 / 月黑 / 上弦 / 下弦 + 佛教重大节日，全天事件，自动更新。</p>
@@ -98,6 +213,38 @@
   </p>
 </div>
 
+<!-- online calendar modal -->
+<div id="cal-modal" aria-hidden="true">
+  <div class="cal-panel" role="dialog" aria-label="布萨日在线日历">
+    <div class="cal-head">
+      <button class="cal-nav" id="cal-prev" aria-label="上一个">‹</button>
+      <span class="cal-title" id="cal-title"></span>
+      <button class="cal-nav" id="cal-next" aria-label="下一个">›</button>
+      <button class="cal-today" id="cal-today">今天</button>
+      <span class="seg">
+        <button id="view-month" class="on">月</button>
+        <button id="view-year">年</button>
+      </span>
+      <button class="cal-close" id="cal-close" aria-label="关闭">×</button>
+    </div>
+    <div id="month-view" class="cal-body">
+      <div class="dow">
+        <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+      </div>
+      <div id="month-grid"></div>
+    </div>
+    <div id="year-view" style="display:none">
+      <div id="year-grid"></div>
+    </div>
+    <div class="cal-foot">
+      <span class="leg"><i class="l-full"></i>月圆日</span>
+      <span class="leg"><i class="l-new"></i>月黑日</span>
+      <span class="leg"><i class="l-q"></i>上/下弦月</span>
+      <span class="leg"><i class="l-fest"></i>重大节日</span>
+    </div>
+  </div>
+</div>
+
 <script>
 const base = location.origin + location.pathname.replace(/index\.html?$/, "");
 const feeds = [
@@ -125,10 +272,169 @@ function unfold(txt) {
 function unesc(s) {
   return s.replace(/\\([\\,;n])/g, (m, c) => (c === "n" ? "\n" : c));
 }
+
+// key: "YYYY-MM-DD" -> [{label, cls}]
+const calEvents = new Map();
+function addEvent(dateStr, summary) {
+  const zh = summary.split("/")[0].trim();
+  let cls;
+  if (/敬|安居/.test(zh)) cls = "fest";
+  else if (zh.includes("月圆")) cls = "full";
+  else if (zh.includes("月黑")) cls = "new";
+  else cls = "q";
+  let label = zh.replace("（布萨日）", "");
+  // festival lines look like "出雨安居 · 月圆日" — keep the festival name
+  if (cls === "fest") label = zh.split("·")[0].trim() || zh;
+  if (!calEvents.has(dateStr)) calEvents.set(dateStr, []);
+  calEvents.get(dateStr).push({ label, cls });
+}
+const keyOf = (y, m, d) =>
+  y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+
+function renderUpcoming() {
+  const today = new Date();
+  const up = [...calEvents.entries()]
+    .map(([k, ev]) => [
+      new Date(+k.slice(0, 4), +k.slice(5, 7) - 1, +k.slice(8, 10)),
+      ev.map((e) => e.label).join(" · "),
+    ])
+    .filter(([d]) => d >= new Date(today.getFullYear(), today.getMonth(), today.getDate()))
+    .sort((a, b) => a[0] - b[0])
+    .slice(0, 12);
+  document.getElementById("events").innerHTML = up
+    .map(([d, s]) => {
+      const wd = "日一二三四五六"[d.getDay()];
+      return `<li><span>${s}</span><span class="d">${d.getFullYear()}-${String(
+        d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} 周${wd}</span></li>`;
+    })
+    .join("");
+}
+
+/* ---------------- calendar modal ---------------- */
+let viewMode = "month";
+let cursor = new Date();
+
+function badgeClass(ev) {
+  // priority: festival > full/new > quarter
+  if (ev.some((e) => e.cls === "fest")) return "fest";
+  if (ev.some((e) => e.cls === "full")) return "full";
+  if (ev.some((e) => e.cls === "new")) return "new";
+  return "q";
+}
+
+function renderMonth() {
+  const y = cursor.getFullYear(), m = cursor.getMonth();
+  document.getElementById("cal-title").textContent = `${y} 年 ${m + 1} 月`;
+  const first = new Date(y, m, 1);
+  const startOffset = first.getDay();
+  const cells = [];
+  const total = 42; // always 6 rows for stable layout
+  const today = new Date();
+  for (let i = 0; i < total; i++) {
+    const dt = new Date(y, m, 1 - startOffset + i);
+    const inMonth = dt.getMonth() === m;
+    const k = keyOf(dt.getFullYear(), dt.getMonth(), dt.getDate());
+    const ev = calEvents.get(k) || [];
+    const isToday = dt.toDateString() === today.toDateString();
+    const marks = ev.slice(0, 2)
+      .map((e) => `<span class="mk ${e.cls}">${e.label}</span>`).join("");
+    cells.push(
+      `<div class="mcell${inMonth ? "" : " out"}${isToday ? " today" : ""}"` +
+      ` data-y="${dt.getFullYear()}" data-m="${dt.getMonth()}" data-d="${dt.getDate()}">` +
+      `<span class="num">${dt.getDate()}</span>${marks}</div>`
+    );
+  }
+  const grid = document.getElementById("month-grid");
+  grid.innerHTML = `<div class="mrow">${cells.join("")}</div>`;
+  // tap a day in year... no-op here; tap an event day shows all labels via title
+  grid.querySelectorAll(".mcell").forEach((c) => {
+    const k = keyOf(+c.dataset.y, +c.dataset.m, +c.dataset.d);
+    const ev = calEvents.get(k);
+    if (ev) c.title = ev.map((e) => e.label).join(" · ");
+  });
+}
+
+function miniDot(cls) {
+  const map = { fest: "fest", full: "full", new: "new", q: "q" };
+  return map[cls] || "";
+}
+
+function renderYear() {
+  const y = cursor.getFullYear();
+  document.getElementById("cal-title").textContent = `${y} 年`;
+  const wrap = document.getElementById("year-grid");
+  const today = new Date();
+  let html = "";
+  for (let m = 0; m < 12; m++) {
+    const off = new Date(y, m, 1).getDay();
+    const days = new Date(y, m + 1, 0).getDate();
+    let dots = "";
+    for (let i = 0; i < off; i++) dots += `<i></i>`;
+    for (let d = 1; d <= days; d++) {
+      const ev = calEvents.get(keyOf(y, m, d));
+      let cls = "";
+      if (ev) cls = badgeClass(ev);
+      const isToday = y === today.getFullYear() && m === today.getMonth() && d === today.getDate();
+      dots += `<i class="${miniDot(cls)}" style="${isToday ? "outline:1.5px solid #b8472d;outline-offset:0" : ""}"></i>`;
+    }
+    html += `<div class="mini" data-m="${m}"><h4>${m + 1} 月</h4>` +
+      `<div class="dow">${"日一二三四五六".split("").map((w) => `<span>${w}</span>`).join("")}</div>` +
+      `<div class="mini-grid">${dots}</div></div>`;
+  }
+  wrap.innerHTML = html;
+  wrap.querySelectorAll(".mini").forEach((el) => {
+    el.addEventListener("click", () => {
+      cursor = new Date(y, +el.dataset.m, 1);
+      setView("month");
+    });
+  });
+}
+
+function setView(mode) {
+  viewMode = mode;
+  document.getElementById("view-month").classList.toggle("on", mode === "month");
+  document.getElementById("view-year").classList.toggle("on", mode === "year");
+  document.getElementById("month-view").style.display = mode === "month" ? "" : "none";
+  document.getElementById("year-view").style.display = mode === "year" ? "" : "none";
+  if (mode === "month") renderMonth(); else renderYear();
+}
+
+function stepCalendar(n) {
+  if (viewMode === "month") cursor = new Date(cursor.getFullYear(), cursor.getMonth() + n, 1);
+  else cursor = new Date(cursor.getFullYear() + n, cursor.getMonth(), 1);
+  setView(viewMode);
+}
+
+const modal = document.getElementById("cal-modal");
+document.getElementById("cal-open").addEventListener("click", () => {
+  cursor = new Date();
+  setView("month");
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+});
+document.getElementById("cal-close").addEventListener("click", closeCal);
+modal.addEventListener("click", (e) => { if (e.target === modal) closeCal(); });
+function closeCal() {
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+}
+document.addEventListener("keydown", (e) => {
+  if (!modal.classList.contains("open")) return;
+  if (e.key === "Escape") closeCal();
+  if (e.key === "ArrowLeft") stepCalendar(-1);
+  if (e.key === "ArrowRight") stepCalendar(1);
+});
+document.getElementById("cal-prev").addEventListener("click", () => stepCalendar(-1));
+document.getElementById("cal-next").addEventListener("click", () => stepCalendar(1));
+document.getElementById("cal-today").addEventListener("click", () => {
+  cursor = new Date(); setView(viewMode);
+});
+document.getElementById("view-month").addEventListener("click", () => setView("month"));
+document.getElementById("view-year").addEventListener("click", () => setView("year"));
+
 fetch("uposatha.ics?_=" + Date.now())
   .then((r) => r.text())
   .then((txt) => {
-    const events = [];
     for (const block of unfold(txt).split("BEGIN:VEVENT").slice(1)) {
       const body = block.split("END:VEVENT")[0];
       let dt, sum;
@@ -136,23 +442,13 @@ fetch("uposatha.ics?_=" + Date.now())
         if (line.startsWith("DTSTART")) dt = line.split(":")[1].trim();
         if (line.startsWith("SUMMARY")) sum = unesc(line.split(":").slice(1).join(":"));
       }
-      events.push([dt, sum]);
+      if (dt) {
+        const dateStr = `${dt.slice(0, 4)}-${dt.slice(4, 6)}-${dt.slice(6, 8)}`;
+        addEvent(dateStr, sum);
+      }
     }
-    const today = new Date();
-    const up = events
-      .map(([d, s]) => [
-        new Date(+d.slice(0, 4), +d.slice(4, 6) - 1, +d.slice(6, 8)), s,
-      ])
-      .filter(([d]) => d >= new Date(today.getFullYear(), today.getMonth(), today.getDate()))
-      .slice(0, 12);
-    document.getElementById("events").innerHTML = up
-      .map(([d, s]) => {
-        const wd = "日一二三四五六"[d.getDay()];
-        const key = s.split("/")[0].trim();
-        return `<li><span>${key}</span><span class="d">${d.getFullYear()}-${String(
-          d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} 周${wd}</span></li>`;
-      })
-      .join("");
+    renderUpcoming();
+    if (modal.classList.contains("open")) setView(viewMode);
   })
   .catch(() => {
     document.getElementById("events").textContent = "无法加载（直接订阅即可）";
